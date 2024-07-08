@@ -1,0 +1,63 @@
+# Ignore Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore virtual environment directory
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+mem0_env/
+
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Ignore temporary files
+*.swp
+*.swo
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+
+# Ignore macOS files
+.DS_Store
+
+# Ignore system files
+Thumbs.db
+Desktop.ini
+
+# Ignore log files
+*.log
+
+# Ignore compiled files
+*.o
+*.out
+*.class
+
+# Ignore IDE project files
+.vscode/
+.idea/
+
+# Ignore node modules
+node_modules/
+
+# Ignore other environment files
+*.env
+
+# Ignore archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.tar.bz2
+
+# Ignore any other temporary or backup files
+*~
+
+
+*.pdf

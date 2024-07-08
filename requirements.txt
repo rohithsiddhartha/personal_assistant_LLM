@@ -1,0 +1,10 @@
+pandas
+numpy
+embedchain
+# camelot-py[base]
+opencv-python
+pdfplumber
+requests
+beautifulsoup4
+selenium
+webdriver-manager

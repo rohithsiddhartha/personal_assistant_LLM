@@ -1,0 +1,49 @@
+Hey there, this is Pranay!
+I'm a Master's student in Computer Science at the University of Massachusetts Amherst, focusing on Deep Learning and Computer
+Vision. My academic path has led me to explore the compelling crossroads of these fields, giving me the opportunity to delve deep and
+gain hands-on experience.
+Previously, I was a Graduate Student Researcher with Reality Labs team at Meta, collaborating with Dr. Shane Moon on the IMU2CLIP
+project. I also had the opportunity to be a research intern at AirLab, associated with the Robotics Institute at Carnegie Mellon University.
+There, I worked alongside Dr. Chen Wang and Dr. Sebastian Scherer on Few Shot Object Detection, and contributed towards PyPose.
+My initial steps into research were guided by Dr. Sumeet Kumar at the Indian School of Business Hyderabad, where I worked on
+identifying surrogate product placements in YouTube Kids videos using Few Shot Learning.
+Contact : pranayr@umass.edu
+
+
+
+
+News
+• Mar 2023 - PyPose was accepted at CVPR 2023. Stay tuned for more details!
+• Feb 2023 - Started working with Meta Reality Labs on the IMU2CLIP project.
+• Sep 2022 - Joined UMass Amherst for my masters in Computer Science
+• July 2022 - One paper accepted at ECCV 2022. Stay tuned for more details!
+• Feb 2022 - Acting as a reviewer for IEEE RA-L.
+• Sep 2021 - Started as an intern at AirLab, CMU.
+• May 2021 - Started as an intern at SRITNE, ISB Hyderabad.
+Experience
+Carnegie Mellon University
+Research Intern, AirLab
+Since Sep '21
+Indian School of Business
+Research Intern, SRITNE
+May '21 - Aug '22
+IIITDM Jabalpur
+B.Tech in Electronics and Communication
+Aug '18 - May '22
+Publications
+AirDet: Few-Shot Detection without Fine-tuning for Autonomous Exploration
+Bowen Li, Chen Wang, Pranay Reddy, Seungchan Kim, Sebastian Scherer. [ECCV2022, Accepted.]
+Leverage class-agnostic relation to implement few-shot detection w/o fine-tuning, which enables fast and efficient robotic
+exploration.
+Paper
+Code
+Webpage
+PyPose: A Library for Robot Learning with Physics-based Optimization
+Chen Wang, Dasong Gao, Kuan Xu, Junyi Geng, Yaoyu Hu, Yuheng Qiu, Bowen Li, Fan Yang, Brady Moon, Abhinav Pandey,
+Aryan, Jiahe Xu, Tianhao Wu, Haonan He, D aning Huang, Zhongqiang Ren, Shibo Zhao, Taimeng Fu, Pranay Reddy, Xiao
+Lin, Wenshan Wang, Jingnan Shi, Rajat Talak, Han Wang, Huai Yu, Shanzhao Wang, Ananth Kashyap, Rohan Bandaru,
+Karthik Dantu, Jiajun Wu, Luca Carlone, Marco Hutter, Sebastian Scherer. [CVPR 2023, Accepted.]
+An open source library that connects classic robotics with modern learning methods seamlessly.
+Paper
+Code
+Webpage
