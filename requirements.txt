@@ -13,3 +13,6 @@ pandas
 faiss-cpu
 transformers
 sentence-transformers
+lxml_html_clean
+requests_html
+pymupdf

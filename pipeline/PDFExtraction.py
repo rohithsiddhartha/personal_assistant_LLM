@@ -1,10 +1,10 @@
-import fitz  
+import fitz  # PyMuPDF
 import pdfplumber
 import os
 import pandas as pd
 
 class PDFExtraction:
-    def __init__(self, pdf_path, base_extraction_dir='pdf_extractions'):
+    def __init__(self, pdf_path, base_extraction_dir):
         self.pdf_path = pdf_path
         self.pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
         self.base_dir = os.path.join(base_extraction_dir, self.pdf_name)
@@ -63,6 +63,7 @@ class PDFExtraction:
         return text
 
 # Usage example
-pdf_path = "pranay.pdf"  # Path to the uploaded PDF
-pdf_extractor = PDFExtraction(pdf_path, base_extraction_dir='pdf_extractions')
-pdf_extractor.extract_all()
+# pdf_path = "pranay.pdf"  # Path to the uploaded PDF
+# pdf_extractor = PDFExtraction(pdf_path, base_extraction_dir='pdf_extractions')
+# extracted_text = pdf_extractor.extract_all()
+# print(extracted_text)
