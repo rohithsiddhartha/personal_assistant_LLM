@@ -16,6 +16,7 @@ classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnl
 # follow_up_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli", device=0 if device == "mps" else -1)
 
 def get_valid_input(prompt, valid_options, max_retries=3):
+    """To check if the user input is one of the valid options or not"""
     attempts = 0
     while attempts < max_retries:
         user_input = input(prompt).strip().lower()
@@ -27,11 +28,13 @@ def get_valid_input(prompt, valid_options, max_retries=3):
     return None
 
 def classify_intent(query):
+    """to classifiy the internt of the user, Zero-shot classification is used"""
     labels = ['save', 'question', 'update', 'delete', 'suggestion', 'emotion']
     result = classifier(query, labels)
     return result['labels'][0]
 
 def get_user_inputs(prompt):
+    """To get the user inputs"""
     user_inputs = []
     while True:
         user_input = input(prompt).strip()

@@ -7,27 +7,24 @@ from transformers import pipeline
 from Operations import DataManager
 from LLMManager import LLMManager
 from ProfileProcessor import ProfileProcessor
+import config
 
 import torch
 import os
 import asyncio
 import shutil
 
-device = "mps" if torch.backends.mps.is_available() else "cpu"
-classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli", device=0 if device == "mps" else -1)
 
-# def get_valid_input(prompt, valid_options, max_retries=3):
-#     attempts = 0
-#     while attempts < max_retries:
-#         user_input = input(prompt).strip().lower()
-#         if user_input in valid_options:
-#             return user_input
-#         print(f"Invalid input. Please enter one of {valid_options}.")
-#         attempts += 1
-#     print("Too many invalid attempts. Exiting.")
-#     return None
+DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
+CLASSIFIER_MODEL = "facebook/bart-large-mnli"
+LLM_MODEL = "gpt-3.5-turbo-0125"
+METRIC = 'cosine'
+
+classifier = pipeline("zero-shot-classification", model=CLASSIFIER_MODEL, device=0 if DEVICE == "mps" else -1)
 
 def main():
+    """Main function to run the personal assistant application."""
+
     print("Welcome to the Building Personal Assistant!")
     
     while True:
@@ -44,9 +41,9 @@ def main():
                 continue_with_existing = get_valid_input("Would you like to continue with the existing DB? (yes/no): ", ['yes', 'no'])
                 if continue_with_existing == 'yes':
                     # Skip to query part if continuing with existing DB
-                    metric = 'mmr'
+                    
                     try:
-                        manager = DataManager(csv_file=summary_db, metric=metric)
+                        manager = DataManager(csv_file=summary_db, metric=METRIC)
                     except:
                         print("Please run the script again to create the summary database.")
                         return
@@ -77,14 +74,14 @@ def main():
     if get_valid_input("Do you have URLs to extract? (yes/no): ", ['yes', 'no']) == 'yes':
         urls = get_user_inputs("Enter the URL (or press Enter to finish): ")
     
-    
+    # Extract text, image, tables from PDFs
     if pdf_paths:
         for pdf_path in pdf_paths:
             pdf_extractor = PDFExtraction(pdf_path, base_extraction_dir=user_dir)
             extracted_text = pdf_extractor.extract_all()
-            # print(f"Extracted text from {pdf_path}:\n{extracted_text}\n")
             print(f"Extracted files are saved in: {pdf_extractor.base_dir}")
-    
+
+    # Extract text from URLs   
     if urls:
         save_intermediate = get_valid_input("Do you want to save intermediate files? (yes/no): ", ['yes', 'no']) == 'yes'
         loop = asyncio.get_event_loop()
@@ -94,16 +91,18 @@ def main():
             tasks.append(loop.create_task(html_extractor.extract_all()))
         loop.run_until_complete(asyncio.gather(*tasks))
     
-    # Process all text files and save to a single CSV
+    # Process all text files and create database
     text_processor = TextProcessor()
     print("Processing all text files to create database")
     text_processor.process_directory(user_dir)
 
+    # Create summary profile
     print("Creating summary profile")
-    llm_manager = LLMManager()
+    llm_manager = LLMManager(LLM_MODEL)
     profile_processor = ProfileProcessor(llm_manager, user_dir)
     profile_processor.process_profile()
 
+    # Process profile to create database
     print("Processing summary profile file to create database")
     text_processor.process_profile(user_dir)
 
@@ -119,7 +118,9 @@ def main():
     run_query_loop(manager, classifier)
 
 def run_query_loop(manager, classifier):
-    llm_manager = LLMManager()
+    """Run the loop to handle user queries."""
+
+    llm_manager = LLMManager(LLM_MODEL)
     while True:
         query = input("Enter your query (or type 'exit' to quit): ").strip()
         if query.lower() == 'exit':

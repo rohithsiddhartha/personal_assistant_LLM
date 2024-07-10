@@ -1,10 +1,17 @@
-import fitz  # PyMuPDF
+import fitz  
 import pdfplumber
 import os
 import pandas as pd
 
 class PDFExtraction:
+    """
+    A class to handle the extraction of text, images, and tables from a PDF file.
+    """
     def __init__(self, pdf_path, base_extraction_dir):
+        """
+        Initialize the PDFExtraction class with the PDF path and base extraction directory.
+        Creates necessary directories for storing extracted content.
+        """
         self.pdf_path = pdf_path
         self.pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
         self.base_dir = os.path.join(base_extraction_dir, self.pdf_name)
@@ -19,6 +26,9 @@ class PDFExtraction:
         os.makedirs(self.table_dir, exist_ok=True)
 
     def extract_text(self):
+        """
+        Extract text from the PDF and save it to a text file.
+        """
         doc = fitz.open(self.pdf_path)
         text = ""
         for page in doc:
@@ -31,6 +41,9 @@ class PDFExtraction:
         return text
 
     def extract_images(self):
+        """
+        Extract images from the PDF and save them to the images directory.
+        """
         doc = fitz.open(self.pdf_path)
         for page_number in range(len(doc)):
             for img_index, img in enumerate(doc.get_page_images(page_number)):
@@ -45,6 +58,9 @@ class PDFExtraction:
         print(f"Images extracted to directory: {self.image_dir}")
 
     def extract_tables(self):
+        """
+        Extract tables from the PDF and save them as CSV files in the tables directory.
+        """
         with pdfplumber.open(self.pdf_path) as pdf:
             for i, page in enumerate(pdf.pages):
                 tables = page.extract_tables()
@@ -57,6 +73,9 @@ class PDFExtraction:
         print(f"Tables extracted to directory: {self.table_dir}")
 
     def extract_all(self):
+        """
+        Extract text, images, and tables from the PDF and save them to their respective directories.
+        """
         text = self.extract_text()
         self.extract_images()
         self.extract_tables()

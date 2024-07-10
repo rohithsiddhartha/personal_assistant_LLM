@@ -26,31 +26,44 @@ from utils import classify_intent, match_exit_phrases, is_follow_up
 # def match_exit_phrases(follow_up_query):
 #     exit_phrases = re.compile(r"\b(thank you|thanks|no thanks|i\'m good|no, i\'m good|bye|goodbye|exit|no)\b", re.IGNORECASE)
 #     return exit_phrases.search(follow_up_query) is not None
-
 def handle_follow_ups(llm_manager, intent, context, initial_query, classifier):
+    """
+    Handles follow-up interactions with a language model manager based on user input's intent and context.
+    """
+
     conversation_history = [f"Context: {context}, '\n', User: {initial_query}"]
+
     if intent == "question":
         response = llm_manager.ask_question(context, initial_query)
     else:
         response = llm_manager.ask_suggestion(context, initial_query)
+
     conversation_history.append(f"Assistant: {response}")
     print("\n\nAssistant Response: \n\n", response)
 
     while is_follow_up(response, classifier):
-        follow_up_query = input("Assistant asked a follow-up question. Your response: ").strip()
+        follow_up_query = input("Assistant asked a follow-up question. \n Add Your response: ").strip()
+        
         if not follow_up_query:
             print("No input detected. Ending follow-up.")
             break
+
         if match_exit_phrases(follow_up_query):
-            print("Thank you. We can proceed for next query")
+            print("Thank you. We can proceed for the next query.")
             break
+
         conversation_history.append(f"User: {follow_up_query}")
+
         context = "\n\n".join(conversation_history)
-        intent = classify_intent(follow_up_query)
+
+        intent = classify_intent(follow_up_query, classifier)
+
         if intent == "question":
             response = llm_manager.ask_question(context, initial_query)
         else:
             response = llm_manager.ask_suggestion(context, initial_query)
+
         conversation_history.append(f"Assistant: {response}")
         print("\n\nAssistant Response: \n\n", response)
+
     return conversation_history

@@ -7,6 +7,9 @@ from unittest.mock import patch, MagicMock
 from src.PDFExtraction import PDFExtraction
 
 def test_extract_text():
+    """
+    Test the extract_text method of PDFExtraction class to ensure it extracts text from a PDF file correctly.
+    """
     pdf_extractor = PDFExtraction('dummy.pdf', 'output_dir')
     mock_fitz_open = MagicMock()
     mock_fitz_doc = MagicMock()
@@ -21,12 +24,18 @@ def test_extract_text():
         assert text == "Sample text"
 
 def test_extract_images():
+    """
+    Test the extract_images method of PDFExtraction class to ensure it extracts images from a PDF file correctly.
+    """
     pdf_extractor = PDFExtraction('dummy.pdf', 'output_dir')
     with patch('fitz.open', return_value=MagicMock()) as mock_fitz:
         pdf_extractor.extract_images()
         assert mock_fitz.called
 
 def test_extract_tables():
+    """
+    Test the extract_tables method of PDFExtraction class to ensure it extracts tables from a PDF file correctly.
+    """
     pdf_extractor = PDFExtraction('dummy.pdf', 'output_dir')
     with patch('pdfplumber.open', return_value=MagicMock()) as mock_pdfplumber:
         pdf_extractor.extract_tables()

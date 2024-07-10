@@ -1,21 +1,22 @@
 import openai
 from openai import OpenAI
 
-# Load your OpenAI API key
-# openai.api_key = 'YOUR_OPENAI_API_KEY'
+
 import os
 
 class LLMManager:
     def __init__(self, model="gpt-3.5-turbo-0125"):
+        """
+        Initialize the LLMManager with the specified model.
+        """
         self.client = OpenAI()
         self.model = model
-        # api_key = os.getenv('OPENAI_API_KEY')
-        # openai.api_key = api_key
-        # openai.api_key
 
 
     def process_profile(self, prompt):
-        """Query OpenAI GPT with the given prompt and return the response."""
+        """
+        Query OpenAI GPT with the given prompt and return the response - processed profile.
+        """
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
@@ -142,6 +143,9 @@ class LLMManager:
 
 
     def ask_question(self, context, query):
+        """
+        Ask a question based on the provided context and query.
+        """
         combined_text = "User Information: "+ context + "\n\nQuery: " + query
 
         response = self.client.chat.completions.create( 
@@ -164,6 +168,9 @@ class LLMManager:
         return response.choices[0].message.content
     
     def ask_suggestion(self, context, query):
+        """
+        Provide a suggestion based on the provided context and query.
+        """
         combined_text = "User Information: "+ context + "\n\nQuery: " + query
 
         response = self.client.chat.completions.create( 
@@ -203,8 +210,9 @@ class LLMManager:
     
 
     def process_query(self, query):
-        # combined_text = "User Information: " + context + "\n\nQuery: " + query
-
+        """
+        Process a general query and provide a response.
+        """
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[
