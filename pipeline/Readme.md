@@ -1,6 +1,3 @@
-Sure! Here’s a detailed README that includes descriptions of the multiple functions in the `src` folder:
-
----
 
 # Personal Assistant with LLM
 
