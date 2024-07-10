@@ -3,20 +3,30 @@ import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
 from ast import literal_eval
+import os
 
-class EmbeddingManager:
-    def __init__(self, csv_file, model_name='all-MiniLM-L6-v2'):
+from LLMManager import LLMManager
+
+class DataManager:
+    def __init__(self, csv_file, model_name='sentence-transformers/all-MiniLM-L6-v2', metric="cosine"):
         self.csv_file = csv_file
+        print(model_name)
+        
         self.model_name = model_name
+        print("self", self.model_name)
+
+              
+    
         self.model = SentenceTransformer(model_name)
         self.df = self.load_csv()
+        self.metric = metric
 
     def load_csv(self):
         print("Loading CSV...")
         df = pd.read_csv(self.csv_file)
-        print(f"before literal eval - type= {type(df['Embeddings'][0])}", df['Embeddings'][0])
+        # print(f"before literal eval - type= {type(df['Embeddings'][0])}", df['Embeddings'][0])
         df['Embeddings'] = df['Embeddings'].apply(literal_eval).apply(np.array)
-        print(f"after literal eval - type= {type(df['Embeddings'][0])}", df['Embeddings'][0])
+        # print(f"after literal eval - type= {type(df['Embeddings'][0])}", df['Embeddings'][0])
         print("CSV Loaded.")
         return df
 
@@ -34,52 +44,68 @@ class EmbeddingManager:
         return embedding
 
     def save_entry(self, text):
-        print(f"Saving new entry: {text[:30]}...")  # Print the first 30 characters of the text
+        print(f"Saving new input: {text}")  
         new_embedding = self.encode_text(text)
         new_entry = pd.DataFrame([{'Text': text, 'Embeddings': new_embedding.tolist()}])
         self.df = pd.concat([self.df, new_entry], ignore_index=True)
         self.save_csv()
-        print("Entry saved to CSV.")
+        print("Entry saved to profile.")
 
-    def retrieve_entries(self, query, k=10, metric='euclidean'):
-        print(f"Retrieving entries using {metric} metric for query: {query[:30]}...")  # Print the first 30 characters of the query
+    def retrieve_entries(self, query, k=10, return_indices=False):
+        print(f"Retrieving entries using {self.metric} metric for query: {query[:50]}...")  # Print the first 50 characters of the query
         query_embedding = self.encode_text(query)
         embeddings = np.vstack(self.df['Embeddings'].values)
-        if metric == 'cosine':
+        if self.metric == 'cosine':
             faiss.normalize_L2(embeddings)
             faiss.normalize_L2(query_embedding)
             index = faiss.IndexFlatIP(embeddings.shape[1]) 
-        elif metric == 'mmr':
+        elif self.metric == 'mmr':
             return self.mmr(query_embedding, top_k=k)
         else:
             index = faiss.IndexFlatL2(embeddings.shape[1])
         
         index.add(embeddings)
         D, I = index.search(query_embedding.reshape(1, -1), k)
-        top_k_texts = [self.df.iloc[i]['Text'] for i in I[0]]
-        print(f"Retrieved {len(top_k_texts)} entries.")
-        return top_k_texts
+        if return_indices:
+            return I[0], [self.df.iloc[i]['Text'] for i in I[0]]
+        else:
+            return [self.df.iloc[i]['Text'] for i in I[0]]
 
     def update_entry(self, query, k=1):
-        print(f"Updating entry for query: {query[:30]} with new text: {new_text[:30]}...")  # Print the first 30 characters
-        top_k_texts = self.retrieve_entries(query, k, metric='euclidean')
-        print("Top 1 similar entry:")
-        print(top_k_texts[0])
-        
-        confirmation = input("Do you want to update this entry? (yes/no): ").strip().lower()
-        if confirmation == 'yes':
-            index_to_update = self.df[self.df['Text'] == top_k_texts[0]].index[0]
-            updated_embedding = self.encode_text(query)
-            self.df.at[index_to_update, 'Text'] = query
-            self.df.at[index_to_update, 'Embeddings'] = updated_embedding.tolist()
-            self.save_csv()
-            print("Entry updated in CSV.")
-        else:
-            print("Update cancelled.")
+        retrieved_indices, top_k_texts = self.retrieve_entries(query, k, return_indices=True)
+        while True:
+            print("Top similar entries:")
+            for i, text in enumerate(top_k_texts):
+                print(f"{i + 1}: {text}")
+
+            selection = input("Enter the number of the entry you want to update (or type 'more' to see more entries, 'cancel' to cancel): ").strip().lower()
+            if selection == 'cancel':
+                break
+            elif selection == 'more':
+                k += 3
+                retrieved_indices, top_k_texts = self.retrieve_entries(query, k, return_indices=True)
+                continue
+            elif selection.isdigit() and 1 <= int(selection) <= len(top_k_texts):
+                index_to_update = retrieved_indices[int(selection) - 1]
+                updated_embedding = self.encode_text(query)
+                self.df.at[index_to_update, 'Text'] = query
+                self.df.at[index_to_update, 'Embeddings'] = updated_embedding.tolist()
+                self.save_csv()
+                print("Entry updated in CSV.")
+                break
+            else:
+                print("Invalid selection. Please try again.")
+
+        if selection == 'cancel':
+            save_to_profile = input("Do you want to save this information to your profile? (yes/no): ").strip().lower()
+            if save_to_profile == 'yes':
+                self.save_entry(query)
+            else:
+                print("Update cancelled and entry not saved to profile.")
 
     def delete_entry(self, query, k=1):
-        print(f"Deleting entry for query: {query[:30]}...")  # Print the first 30 characters of the query
-        top_k_texts = self.retrieve_entries(query, k, metric='euclidean')
+        print(f"Deleting entry for query: {query[:50]}...")  # Print the first 50 characters of the query
+        top_k_texts = self.retrieve_entries(query, k)
         print("Top 1 similar entry:")
         print(top_k_texts[0])
         
@@ -123,7 +149,9 @@ class EmbeddingManager:
 
 if __name__ == "__main__":
     csv_file = "/Users/rohithsiddharthareddy/Desktop/TakeHomeAssignments/personal_assistant_LLM/rohithsiddhartha/all_chunks_and_embeddings.csv"
-    manager = EmbeddingManager(csv_file)
+    manager = DataManager(csv_file)
+    llm_manager = LLMManager()  # Replace with your actual OpenAI API key
+
     
     while True:
         operation = input("Enter operation (save, retrieve, update, delete, exit): ").strip().lower()
@@ -138,6 +166,10 @@ if __name__ == "__main__":
             print("Retrieved entries:")
             for result in results:
                 print(result)
+            context = "\n\n".join(results)
+            answer = llm_manager.ask_question(context, query)
+            print("\n\nAssistant Response: \n\n", answer)
+            
         elif operation == 'update':
             query = input("Enter the query text to find the entry to update: ")
             manager.update_entry(query)

@@ -29,20 +29,20 @@ class TextProcessor:
         chunks = self.text_splitter.split_text(master_text)
         embeddings = self.encode_texts(chunks)
         self.save_to_csv(output_csv, chunks, embeddings)
-        print(f"Chunks and embeddings saved to {output_csv}")
+        # print(f"Chunks and embeddings saved to {output_csv}")
     
-    def process_directory(self, directory, output_csv):
-        all_texts = []
-        all_embeddings = []
+    def process_directory(self, directory):
+        
         master_text = ''
-        self.text_splitter = CharacterTextSplitter(chunk_size=250, 
+        output_csv = os.path.join(directory, "total_profile_data.csv")
+        self.text_splitter = CharacterTextSplitter(chunk_size=300, 
                                                    chunk_overlap=100,
                                                    separator=" ")
-                                                #    separator=" \n")
+                                                #    separator="\n")
 
         for root, _, files in os.walk(directory):
             for file in files:
-                if file.endswith(".txt"):
+                if file.endswith(".txt") and not file.endswith("summary.txt"):
                     file_path = os.path.join(root, file)
                     text = self.extract_text(file_path)
                     print(f"Processing {file_path}...")
@@ -50,5 +50,29 @@ class TextProcessor:
                     master_text +=f'\n {text} \n'
 
         self.process_and_save_text(master_text, output_csv)
-        print(f"All chunks and embeddings saved to {output_csv}")
+        print(f"Full user Database is created at {output_csv}")
+        return master_text
+
+    def process_profile(self, directory):
+        
+        master_text = ''
+        output_csv = os.path.join(directory, "summary_profile.csv")
+        # print(output_csv)
+        self.text_splitter = CharacterTextSplitter(chunk_size=300, 
+                                                   chunk_overlap=100,
+                                                #    separator=" ")
+                                                   separator="\n")
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.endswith("summary.txt"):
+                    print("File", file)
+                    file_path = os.path.join(root, file)
+                    text = self.extract_text(file_path)
+                    print(f"Processing {file_path}...")
+
+                    master_text +=f'\n {text} \n'
+
+        self.process_and_save_text(master_text, output_csv)
+        print(f"Summary profile database  is created at {output_csv}")
+        os.environ['SUMMARY_DB'] = output_csv
         return master_text
