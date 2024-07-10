@@ -1,6 +1,6 @@
 # Personal Assistant with LLM
 
-This project implements a personal assistant using Large Language Models (LLMs). The assistant processes user inputs, extracts information from various sources like PDFs and HTML pages, and provides responses based on the user's profile and preferences.
+This project implements a personal assistant using Large Language Models (LLMs). The assistant processes user inputs, extracts information from various sources like PDFs and HTML pages, and provides responses based on the user's profile and preferences. With added memory component where it leverages the extracted user profile information which can be updated and deleted.
 
 ## Table of Contents
 
