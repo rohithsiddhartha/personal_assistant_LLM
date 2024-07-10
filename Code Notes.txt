@@ -1,8 +1,0 @@
-improve this so that if the username exists, basically. username exists if theere is directory already present. So if it is already prsent ask if the user would like to add any information to the db. If yes let him enter pdf and urls -> then process them etc before you ask query similar to current flow.
-
-If not ask user if he would like to continue with existing db. if yes then directly proceed to ask a query. and then keep it same. 
-
-if the user says no then ask if he'd like to delete the db. If yes delete and ask if user wants to create new db with same user name if yes proceed as the username doesn't exist ask user to enter pdf and urls and proceed further. 
-If no ask user again to enter user name
-
-If no then ask user if he'd like to continue with existing db to check if he has changed his mind. If no end it. 
