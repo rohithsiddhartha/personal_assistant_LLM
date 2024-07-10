@@ -11,6 +11,14 @@ env.bak/
 venv.bak/
 mem0_env/
 
+# Ignore other directories
+rohithprofile/
+rohithsiddhartha/
+neattest/
+output_dir/
+testprofile/
+user_profile_summary.txt
+
 
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints
@@ -61,3 +69,4 @@ node_modules/
 
 
 *.pdf
+*.docx
