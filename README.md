@@ -1,7 +1,3 @@
-Sure! Here’s a detailed README that includes descriptions of the multiple functions in the `src` folder:
-
----
-
 # Personal Assistant with LLM
 
 This project implements a personal assistant using Large Language Models (LLMs). The assistant processes user inputs, extracts information from various sources like PDFs and HTML pages, and provides responses based on the user's profile and preferences.
