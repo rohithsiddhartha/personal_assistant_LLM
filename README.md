@@ -31,6 +31,15 @@ This project implements a personal assistant using Large Language Models (LLMs).
     ```bash
     pip install -r requirements.txt
     ```
+4. **Create a `.env` file with your OpenAI API key:**
+    - Create a file named `.env` in the root directory of the project using a text editor or CLI:
+        ```bash
+        echo "OPENAI_API_KEY='sk-****'" > .env
+        ```
+    - Alternatively, manually add the following line to the `.env` file:
+        ```
+        OPENAI_API_KEY='sk-****'
+        ```
 
 ## Usage
 

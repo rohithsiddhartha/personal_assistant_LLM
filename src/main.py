@@ -15,6 +15,10 @@ import os
 import asyncio
 import shutil
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
 CLASSIFIER_MODEL = "facebook/bart-large-mnli"
