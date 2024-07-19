@@ -1,6 +1,8 @@
 from transformers import pipeline
 import re
 from config import CLASSIFIER_MODEL, DEVICE
+import validators
+import os
 
 # Initialize the classifier pipeline with the specified model and device
 classifier = pipeline("zero-shot-classification", model=CLASSIFIER_MODEL, device=0 if DEVICE == "mps" else -1)
@@ -42,7 +44,8 @@ def match_exit_phrases(follow_up_query):
     exit_phrases = re.compile(r"\b(thank you|thanks|no thanks|i'm good|no, i'm good|bye|goodbye|exit|no)\b", re.IGNORECASE)
     return exit_phrases.search(follow_up_query) is not None
 
-def get_user_inputs(prompt):
+
+def get_user_inputs(prompt, input_type='url'):
     """
     Prompt the user for multiple inputs until an empty input is received.
     """
@@ -50,7 +53,13 @@ def get_user_inputs(prompt):
     while True:
         user_input = input(prompt).strip()
         if user_input:
-            user_inputs.append(user_input)
+            if input_type == 'url' and validators.url(user_input):
+                user_inputs.append(user_input)
+            elif input_type == 'file' and os.path.isfile(user_input):
+                user_inputs.append(user_input)
+            else:
+                print(f"Invalid {input_type}. Please enter a valid {input_type}.")
         else:
             break
     return user_inputs
+

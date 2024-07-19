@@ -15,3 +15,5 @@ lxml_html_clean
 requests_html
 pymupdf
 pytest
+nest_asyncio
+validators
