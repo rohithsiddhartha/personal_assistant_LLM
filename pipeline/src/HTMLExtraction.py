@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from pathlib import Path
 import re
+import os
+import validators
 
 # Apply nest_asyncio if running in a Jupyter notebook or interactive environment
 if asyncio.get_event_loop().is_running():
@@ -17,6 +19,8 @@ class HTMLExtraction:
     and optionally saves intermediate results.
     """
     def __init__(self, url, save_intermediate=False, base_extraction_dir='extracted_html_files'):
+        if not validators.url(url):
+            raise ValueError("Invalid URL provided. Please enter a valid URL.")
         self.url = url
         self.save_intermediate = save_intermediate
         self.session = AsyncHTMLSession()
@@ -73,8 +77,10 @@ class HTMLExtraction:
         """
         if isinstance(html_content, Path):
             # Load the saved HTML content using BeautifulSoup
+            print("Is instance code working????")
             with open(html_content, 'r', encoding='utf-8') as file:
                 html_content = file.read()
+                print(type(html_content))
 
         soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -86,7 +92,7 @@ class HTMLExtraction:
         
         if self.save_intermediate:
             # Save the cleaned content
-            cleaned_file_path = html_content.parent / 'cleaned_page.html'
+            cleaned_file_path = os.path.join(self.base_dir, 'cleaned_page.html')
             with open(cleaned_file_path, 'w', encoding='utf-8') as file:
                 file.write(cleaned_html_content)
             print(f"Cleaned HTML content saved to '{cleaned_file_path}'.")

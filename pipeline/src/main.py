@@ -8,6 +8,7 @@ from Operations import DataManager
 from LLMManager import LLMManager
 from ProfileProcessor import ProfileProcessor
 import config
+import validators
 
 import torch
 import os
@@ -21,6 +22,25 @@ LLM_MODEL = "gpt-3.5-turbo-0125"
 METRIC = 'cosine'
 
 classifier = pipeline("zero-shot-classification", model=CLASSIFIER_MODEL, device=0 if DEVICE == "mps" else -1)
+
+
+def process_urls(urls, user_dir, save_intermediate):
+    """
+    Process a list of URLs to extract HTML content.
+    """
+    loop = asyncio.get_event_loop()
+    tasks = []
+    for url in urls:
+
+        html_extractor = HTMLExtraction(url, save_intermediate=save_intermediate, base_extraction_dir=user_dir)
+        tasks.append(loop.create_task(html_extractor.extract_all()))
+
+    if tasks:
+        try:
+            loop.run_until_complete(asyncio.gather(*tasks))
+        except Exception as e:
+            print(e)
+            print("Error processing one or more URLs.")
 
 def main():
     """Main function to run the personal assistant application."""
@@ -69,10 +89,9 @@ def main():
     urls = []
 
     if get_valid_input("Do you have PDF files to extract? (yes/no): ", ['yes', 'no']) == 'yes':
-        pdf_paths = get_user_inputs("Enter the path to the PDF file (or press Enter to finish): ")
+        pdf_paths = get_user_inputs("Enter the path to the PDF file (or press Enter to finish): ", input_type='file')
     
-    if get_valid_input("Do you have URLs to extract? (yes/no): ", ['yes', 'no']) == 'yes':
-        urls = get_user_inputs("Enter the URL (or press Enter to finish): ")
+    
     
     # Extract text, image, tables from PDFs
     if pdf_paths:
@@ -82,14 +101,11 @@ def main():
             print(f"Extracted files are saved in: {pdf_extractor.base_dir}")
 
     # Extract text from URLs   
+    if get_valid_input("Do you have URLs to extract? (yes/no): ", ['yes', 'no']) == 'yes':
+        urls = get_user_inputs("Enter the URL (or press Enter to finish): ", input_type='url')
     if urls:
         save_intermediate = get_valid_input("Do you want to save intermediate files? (yes/no): ", ['yes', 'no']) == 'yes'
-        loop = asyncio.get_event_loop()
-        tasks = []
-        for url in urls:
-            html_extractor = HTMLExtraction(url, save_intermediate=save_intermediate, base_extraction_dir=user_dir)
-            tasks.append(loop.create_task(html_extractor.extract_all()))
-        loop.run_until_complete(asyncio.gather(*tasks))
+        process_urls(urls, user_dir, save_intermediate)
     
     # Process all text files and create database
     text_processor = TextProcessor()
@@ -123,6 +139,9 @@ def run_query_loop(manager, classifier):
     llm_manager = LLMManager(LLM_MODEL)
     while True:
         query = input("Enter your query (or type 'exit' to quit): ").strip()
+        if not query:
+            print("Please enter a valid query, If you want to exit, please type 'exit' ")
+            continue
         if query.lower() == 'exit':
             print("Goodbye!")
             break
