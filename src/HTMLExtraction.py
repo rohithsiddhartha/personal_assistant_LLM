@@ -66,9 +66,8 @@ class HTMLExtraction:
                 with open(rendered_file_path, 'w', encoding='utf-8') as file:
                     file.write(html_content)
                 print(f"HTML content saved to '{rendered_file_path}'.")
-                return rendered_file_path
-            else:
-                return html_content
+                
+            return html_content
         except Exception as e:
             raise RuntimeError("Extraction request is blocked due to a network policy")
 
@@ -96,9 +95,8 @@ class HTMLExtraction:
             with open(cleaned_file_path, 'w', encoding='utf-8') as file:
                 file.write(cleaned_html_content)
             print(f"Cleaned HTML content saved to '{cleaned_file_path}'.")
-            return cleaned_file_path
-        else:
-            return cleaned_html_content
+       
+        return cleaned_html_content
 
     def _normalize_whitespace(self, text):
         """

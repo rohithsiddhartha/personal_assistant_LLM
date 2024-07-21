@@ -42,7 +42,7 @@ def handle_follow_ups(llm_manager, intent, context, initial_query, classifier):
     print("\n\nAssistant Response: \n\n", response)
 
     while is_follow_up(response, classifier):
-        follow_up_query = input("Assistant asked a follow-up question. \n Add Your response: ").strip()
+        follow_up_query = input("Assistant asked a follow-up question. If you do not have any follow up questions press 'Enter'.\n Add Your response: ").strip()
         
         if not follow_up_query:
             print("No input detected. Ending follow-up.")
