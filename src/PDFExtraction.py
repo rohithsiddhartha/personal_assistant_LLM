@@ -37,7 +37,7 @@ class PDFExtraction:
         with open(self.text_file, "w", encoding="utf-8") as file:
             file.write(text)
         
-        print(f"Text extracted to file: {self.text_file}")
+        # print(f"Text extracted to file: {self.text_file}")
         return text
 
     def extract_images(self):
@@ -55,7 +55,7 @@ class PDFExtraction:
                 with open(image_path, "wb") as image_file:
                     image_file.write(image_bytes)
         
-        print(f"Images extracted to directory: {self.image_dir}")
+        # print(f"Images extracted to directory: {self.image_dir}")
 
     def extract_tables(self):
         """
@@ -70,7 +70,7 @@ class PDFExtraction:
                         table_path = os.path.join(self.table_dir, f"table_page{i+1}_{j+1}.csv")
                         df.to_csv(table_path, index=False)
         
-        print(f"Tables extracted to directory: {self.table_dir}")
+        # print(f"Tables extracted to directory: {self.table_dir}")
 
     def extract_all(self):
         """

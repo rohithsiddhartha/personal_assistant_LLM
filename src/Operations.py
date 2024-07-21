@@ -40,7 +40,7 @@ class DataManager:
         self.save_csv()
         print("Entry saved to profile.")
 
-    def retrieve_entries(self, query, k=10, return_indices=False):
+    def retrieve_entries(self, query, k=5, return_indices=False):
         print(f"Retrieving entries using {self.metric} metric for query: {query[:50]}...")
         query_embedding = self.encode_text(query)
         embeddings = np.vstack(self.df['Embeddings'].values)
@@ -52,7 +52,7 @@ class DataManager:
             faiss.normalize_L2(query_embedding.reshape(1, -1))
             index = faiss.IndexFlatIP(embeddings.shape[1])
         elif self.metric == 'mmr':
-            return self.mmr(query_embedding, top_k=k)
+            return self.mmr(query_embedding, top_k=k, return_indices=return_indices)
         else:
             index = faiss.IndexFlatL2(embeddings.shape[1])
         
@@ -69,7 +69,6 @@ class DataManager:
             print("Top similar entries:")
             for i, text in enumerate(top_k_texts):
                 print(f"{i + 1}: {text}")
-
             selection = input("Enter the number of the entry you want to update (or type 'more' to see more entries, 'cancel' to cancel): ").strip().lower()
             if selection == 'cancel':
                 break
@@ -111,7 +110,7 @@ class DataManager:
         else:
             print("Deletion cancelled.")
 
-    def mmr(self, query_embedding, top_k=5, lambda_param=0.5):
+    def mmr(self, query_embedding, top_k=5, lambda_param=0.5, return_indices=False):
         print("Running MMR...")
         doc_embeddings = np.vstack(self.df['Embeddings'].values)
         query_embedding = query_embedding / np.linalg.norm(query_embedding)
@@ -137,5 +136,7 @@ class DataManager:
             selected.append(selected_idx)
             selected_scores.append(sim_scores[selected_idx])
         
-        return [self.df.iloc[i]['Text'] for i in selected]
-
+        if return_indices:
+            return selected, [self.df.iloc[i]['Text'] for i in selected]
+        else:
+            return [self.df.iloc[i]['Text'] for i in selected]

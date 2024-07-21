@@ -23,7 +23,7 @@ load_dotenv()
 DEVICE = "mps" if torch.backends.mps.is_available() else "cpu"
 CLASSIFIER_MODEL = "facebook/bart-large-mnli"
 LLM_MODEL = "gpt-3.5-turbo-0125"
-METRIC = 'cosine'
+METRIC = 'mmr'
 
 classifier = pipeline("zero-shot-classification", model=CLASSIFIER_MODEL, device=0 if DEVICE == "mps" else -1)
 
@@ -159,6 +159,7 @@ def run_query_loop(manager, classifier):
 
         if intent == 'save':
             updated_query = llm_manager.process_query(query)
+            print("Saving the entry as:", updated_query)
             manager.save_entry(updated_query)
         elif intent == 'question':
             results = manager.retrieve_entries(query, k=5)

@@ -2,6 +2,7 @@ import re
 from transformers import pipeline
 import torch
 from utils import classify_intent, match_exit_phrases, is_follow_up
+from utils import get_valid_input
 
 # def classify_intent(query, classifier):
 #     labels = ['save', 'question', 'update', 'delete', 'suggestion', 'emotion']
@@ -60,9 +61,9 @@ def handle_follow_ups(llm_manager, intent, context, initial_query, classifier):
 
         if intent == "question":
             response = llm_manager.ask_question(context, initial_query)
-        else:
+        elif intent in ["suggestion", "emotion"]:
             response = llm_manager.ask_suggestion(context, initial_query)
-
+        
         conversation_history.append(f"Assistant: {response}")
         print("\n\nAssistant Response: \n\n", response)
 
